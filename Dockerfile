@@ -1,10 +1,12 @@
-# Fiber node with pre-generated key and config
+# Fiber node with auto key generation
 FROM nervos/fiber:0.9.0
 
-# Pre-create the config from the template
+COPY entrypoint-wrapper.sh /usr/local/bin/entrypoint-wrapper.sh
+RUN chmod +x /usr/local/bin/entrypoint-wrapper.sh
+
+# Pre-create config from template
 RUN mkdir -p /fiber/ckb && \
     cp /usr/local/share/fiber/config/testnet/config.yml /fiber/config.yml
 
-# Use the original Fiber entrypoint but set env vars for config and key password
-ENV FIBER_CONFIG=/fiber/config.yml
-ENV FIBER_HOME=/fiber
+# Override entrypoint to generate key on first run
+ENTRYPOINT ["/usr/local/bin/entrypoint-wrapper.sh"]
